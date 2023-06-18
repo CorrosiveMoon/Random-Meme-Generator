@@ -8,29 +8,31 @@ from meme import generate_meme
 
 os.makedirs('./static', exist_ok=True)
 
-
 app = Flask(__name__)
 
 meme = MemeGenerator('./static')
 
-
 def setup():
     """Load all resources"""
 
-    quote_files = ['./_data/DogQuotes/DogQuotesTXT.txt',
-                   './_data/DogQuotes/DogQuotesDOCX.docx',
-                   './_data/DogQuotes/DogQuotesPDF.pdf',
-                   './_data/DogQuotes/DogQuotesCSV.csv']
+    quote_files = [
+        './_data/DogQuotes/DogQuotesTXT.txt',
+        './_data/DogQuotes/DogQuotesDOCX.docx',
+        './_data/DogQuotes/DogQuotesCSV.csv'
+    ]
 
     quotes = []
     for quote_file in quote_files:
         quotes.extend(Ingestor.parse(quote_file))
 
+    pdf_file = './_data/DogQuotes/DogQuotesPDF.pdf'
+    pdf_quotes = Ingestor.parse(pdf_file)  # Parse quotes from the PDF (parser type inferred from file extension)
+    quotes.extend(pdf_quotes)
+
     images_path = "./_data/photos/dog/"
     imgs = [os.path.join(images_path, image) for image in os.listdir(images_path)]
 
     return quotes, imgs
-
 
 quotes, imgs = setup()
 

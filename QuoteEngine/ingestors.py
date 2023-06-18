@@ -100,30 +100,18 @@ class DocxIngestor(IngestorInterface):
 class PDFIngestor(IngestorInterface):
     @classmethod
     def can_ingest(cls, path: str) -> bool:
-        """Check if the class can ingest a PDF file.
-
-        Args:
-            path (str): The path to the file.
-
-        Returns:
-            bool: True if the class can ingest the PDF file, False otherwise.
-        """
+        # Check if the class can ingest a PDF file
         return path.endswith('.pdf')
 
     @classmethod
     def parse(cls, path: str) -> List[QuoteModel]:
-        """Parse the PDF file and return a list of QuoteModel instances.
-
-        Args:
-            path (str): The path to the PDF file.
-
-        Returns:
-            List[QuoteModel]: A list of QuoteModel instances representing the quotes found in the PDF file.
-        """
+        # Parse the PDF file and return a list of QuoteModel instances
         quotes = []
         temp_file = 'temp.txt'
         try:
+            # Call pdftotext to convert PDF to text
             subprocess.run(['pdftotext', path, temp_file], check=True)
+
             with open(temp_file, 'r') as f:
                 for line in f:
                     if line.strip():
@@ -132,6 +120,7 @@ class PDFIngestor(IngestorInterface):
         finally:
             os.remove(temp_file)
         return quotes
+
 
 
 class TXTIngestor(IngestorInterface):

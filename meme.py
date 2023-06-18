@@ -21,7 +21,7 @@ def generate_meme(path=None, body=None, author=None):
     else:
         img = path
 
-    if body is None:
+    if body is None and author is None:
         quote_files = [
             "./_data/DogQuotes/DogQuotesTXT.txt",
             "./_data/DogQuotes/DogQuotesDOCX.docx",
@@ -34,13 +34,15 @@ def generate_meme(path=None, body=None, author=None):
 
         quote = random.choice(quotes)
     else:
-        if author is None:
-            raise Exception("Author Required if Body is Used")
+        if body is None or author is None:
+            raise Exception("Both quote body and author are required.")
         quote = QuoteModel(body, author)
 
     meme = MemeGenerator("./tmp")
     path = meme.make_meme(img, quote.body, quote.author)
     return path
+
+
 
 
 if __name__ == "__main__":
