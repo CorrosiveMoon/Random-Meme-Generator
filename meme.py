@@ -32,17 +32,30 @@ def generate_meme(path=None, body=None, author=None):
         for f in quote_files:
             quotes.extend(Ingestor.parse(f))
 
-        quote = random.choice(quotes)
+        # Filter out existing quotes with the same body and different author
+        filtered_quotes = [
+            q for q in quotes if q.body != body or q.author == author
+        ]
+
+        if filtered_quotes:
+            quote = random.choice(filtered_quotes)
+        else:
+            quote = random.choice(quotes)
     else:
         if body is None or author is None:
             raise Exception("Both quote body and author are required.")
         quote = QuoteModel(body, author)
 
-    meme = MemeGenerator("./tmp")
+    meme = MemeGenerator("./temp")
+    
+    # Adjust font size for long quotes
+    if len(quote.body) > 50:
+        meme.font_size = 20
+    else:
+        meme.font_size = 30
+    
     path = meme.make_meme(img, quote.body, quote.author)
     return path
-
-
 
 
 if __name__ == "__main__":

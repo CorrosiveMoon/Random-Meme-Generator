@@ -2,6 +2,12 @@ from PIL import Image, ImageDraw, ImageFont
 import os
 import random
 
+class InvalidImageError(Exception):
+    """Custom exception class for invalid image URL."""
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
 
 class MemeGenerator:
     """A class for generating memes."""
@@ -24,8 +30,19 @@ class MemeGenerator:
 
         Returns:
             Image: The loaded image.
+
+        Raises:
+            InvalidImageURLException: If the image URL is invalid.
         """
-        return Image.open(img_path)
+        if not os.path.isfile(img_path):
+            raise InvalidImageError(f"Invalid image URL: {img_path}")
+
+        try:
+            return Image.open(img_path)
+        except Exception as e:
+            raise InvalidImageError(f"Invalid image file: {img_path}") from e
+
+
 
     def _resize_image(self, img, width):
         """Resize an image while maintaining the aspect ratio.
@@ -78,9 +95,14 @@ class MemeGenerator:
         Returns:
             str: The path to the output image file.
         """
-        img = self._load_image(img_path)
-        img = self._resize_image(img, 500)
-        self._add_caption(img, text, author)
-        output_path = os.path.join(self.output_dir, f"meme_{random.randint(0, 1000000)}.jpg")
-        img.save(output_path)
-        return output_path
+        try:
+            img = self._load_image(img_path)
+            img = self._resize_image(img, 500)
+            self._add_caption(img, text, author)
+            output_path = os.path.join(self.output_dir, f"meme_{random.randint(0, 1000000)}.jpg")
+            img.save(output_path)
+            return output_path
+        except InvalidImageError as e:
+            # print(e.message)
+            # return None
+            return str(e)
